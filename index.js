@@ -110,4 +110,92 @@ function parse(str){
   return result;
 }
 
-console.log(parse(str))
+class event{
+  constructor(){
+    this._callbacks={};
+  }
+  on(type,handler){
+    this._callbacks[type]=this._callbacks[type]||[];
+    this._callbacks[type].push(handler);
+    return this;
+  }
+  off(type,handler){
+    let list=this._callbacks[type];
+    if(list!=undefined){
+      for(let i=0;i<list.length;i++){
+        if(list[i]===handler){
+          list.splice(i,1);
+          break;
+        }
+      }
+    }
+    return this;
+  }
+  trigger(type,data){
+    let list=this._callbacks[type];
+    if(list!=undefined){
+      for(let i=0;i<list.length;i++){
+        list[i].call(this,data);
+      }
+    }
+  }
+  once(type,handler){
+    this.on(type,wrapper);
+    let self=this;
+    function wrapper(){
+      handler.apply(self,arguments);
+      self.off(type,wrapper);
+    }
+    return this;
+  }
+
+}
+
+
+(function (window) {
+    function fn(str) {
+        this.str = str;
+    }
+  //(\d+) ()中保存到$1
+    fn.prototype.format = function () {
+        var arg = Array.from(arguments);
+        return this.str.replace(/\{\s*(\d+)\s*\}/g, function (a, b) {
+            return arg[b] || '';
+        });
+    };
+
+    window.fn = fn;
+})(window);
+
+// use
+(function () {
+    var t = new fn('<p><a href="{0}">{1}</a><span>{2}</span></p>');
+    console.log(t.format('http://www.alibaba.com', 'Alibaba', 'Welcome'));
+})();
+
+
+function fillArray(input,start,end){
+  for(let i=0;i<100;i++){
+    let num=parseInt(Math.random()*(end-start))+start;
+    input[i]=num;
+  }
+}
+
+    var input = [];
+    fillArray(input, 1, 100);
+    console.log(input);
+
+    normalize(input);
+    // console.log(input);
+
+function normalize(input){
+  let map={};
+  for(let i=0;i<100;i++){
+    if(map[input[i]]==undefined) map[input[i]]=true;
+  }
+  let arr=[];
+  for(let key in map){
+    arr.push(key);
+  }
+  console.log(arr)
+}
