@@ -199,3 +199,22 @@ function normalize(input){
   }
   console.log(arr)
 }
+
+
+function throttle(fn,wait){
+  let timer=null;
+  var args = Array.from(arguments).slice(2);
+  return function(){
+    if(timer==null){
+      timer=setTimeout(()=>{
+        fn.apply(this,args);
+        console.log(args)
+        timer=null;
+      },wait);
+    }
+  }
+}
+function testThro(a){
+  console.log('testThro',a);
+}
+throttle(testThro,100,1)()
